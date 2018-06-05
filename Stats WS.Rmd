@@ -51,6 +51,10 @@ write.csv(ci_data, file="ci_data_short")
 #ci_data <- rbind(ci_data, c(100,0,100))
 ```
 
+Import the data.
+```{r}
+ci_data <- read.csv("ci_data_short")
+```
 
 
 Build representations of the data.
