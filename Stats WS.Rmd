@@ -1,0 +1,135 @@
+---
+title: "Stats WS"
+author: "Jayson Nissen"
+date: "5/7/2018"
+output: pdf_document
+---
+Notes on things to cover.
+How markdown works.
+Loading data.
+Using the help menu.
+Adding and loading packages.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(msm)
+library(dplyr)
+library(tidyr)
+library(psych)
+library(knitr)
+
+setwd("~/Research/PER/Stats Working Group") #set the working directory to a folder for this project. It makes life easier.
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+Build the datasets
+```{r, eval=FALSE, include=FALSE}
+set.seed(45637268)
+ci_data <- data.frame(pre= rtnorm(n=100,mean=30,sd=22,lower=0,upper=100),
+                      gain= rtnorm(n=100,mean=8,sd=35,lower=-20,upper=40))
+ci_data$post <- ci_data$pre + ci_data$gain
+ci_data$post[ci_data$post>100] <- 100
+ci_data$post[ci_data$post<0] <- 0
+ci_data$gain <- ci_data$post-ci_data$pre
+write.csv(ci_data, file="ci_data_long")
+```
+
+```{r, include=FALSE}
+set.seed(45637268)
+ci_data <- data.frame(pre= rtnorm(n=8,mean=30,sd=24,lower=0,upper=100),
+                      gain= rtnorm(n=8,mean=12,sd=35,lower=-10,upper=70))
+ci_data$post <- ci_data$pre + ci_data$gain
+ci_data$post[ci_data$post>80] <- 80
+ci_data$post[ci_data$post<0] <-0
+ci_data$gain <- ci_data$post-ci_data$pre
+write.csv(ci_data, file="ci_data_short")
+#ci_data <- rbind(ci_data, c(100,0,100))
+```
+
+
+
+Build representations of the data.
+Scatter plot
+```{r}
+plot(ci_data$pre,ci_data$post, main='Pre/Post Scatter Plot', xlab = "Pre", ylab="Post")
+```
+Boxplot
+```{r}
+boxplot(ci_data[c(1,3)], main='Boxplots of Pretest and Posttest Scores')
+```
+Histograms
+```{r}
+hist(ci_data$pre,col = rgb(1,0,0,0.4),xlab = 'Score', ylab='Count', main='Distribution of Pretest Score')
+```
+```{r}
+hist(ci_data$post,col = rgb(0,0,1,0.4),xlab = 'Score', ylab='Count', main='Distribution of Posttest Scores')
+```
+
+```{r}
+#Note that this is a terrible way to make a histogram. We highly recommend learning ggplot and the tidyverse.
+## calculate the histograms - don't plot yet
+histpre <- hist(ci_data$pre,plot = FALSE)
+histpost <- hist(ci_data$post,plot = FALSE)
+## calculate the range of the graph
+xlim <- range(histpre$breaks,histpost$breaks)
+ylim <- range(0,histpre$counts,
+              histpost$counts)
+## plot the first graph
+plot(histpre,xlim = xlim, ylim = ylim,
+     col = rgb(1,0,0,0.4),xlab = 'Score', ylab='Count',
+     freq = TRUE, ## relative, not absolute frequency
+     main = 'Distribution of Pretest and Posttest Scores')
+## plot the second graph on top of this
+opar <- par(new = FALSE)
+plot(histpost,xlim = xlim, ylim = ylim,
+     xaxt = 'n', yaxt = 'n', ## don't add axes
+     col = rgb(0,0,1,0.4), add = TRUE,
+     freq = TRUE) ## relative, not absolute frequency
+## add a legend in the corner
+legend('topleft',c('Pre','Post'),
+       fill = rgb(1:0,0,0:1,0.4), bty = 'n',
+       border = NA)
+par(opar)
+```
+
+Now we want to calculate the descriptive statistics for the data. There are a lot of ways to do this. We are going to use the describe function in the Psych package. Kable is a function for markdown documents that creates tables.
+```{r}
+sumstats<-describe(ci_data)
+kable(sumstats, digits=1)
+```
+
+Now we need to determine what type of statistical tests that we want to run.
+The most common test is for pre/post concept inventories is a matched t-test. Before we run the test we want to check that the data meets the assumptions for the test. These assumptions include:
+1. The data is measured on a continuous scale.
+2. The data is matched across two groups.
+3. There are no major outliers in the differences between the groups
+4. The distributions of the differences are approximately normally distributed
+
+Discuss 1 and 2 and decide if the data meets these assumptions.
+Earlier we produced boxplots of the pretest and posttest that identified outliers in those scores. We can do the same for the gains to identify outliers in the difference between the scores.
+
+```{r pressure, echo=FALSE}
+boxplot(ci_data[c(2)], main='Boxplot of Gains') #This is a boxplot of the gains
+points(mean(ci_data$gain), col="blue", fill="blue") #This adds a point for the mean to provide a visual representation of the difference between the mean and median.
+```
+The boxplot can show how far apart the mean and median are and how symmetric the data is. We can look back at our summary statistics table to determine if our data is too far from normal to use a t-test on. A normal distribution has a skew of 0 and a kurtosis of 0. Accepted limits for both skewness and kurtosis are -2 and +2 [George, D., & Mallery, M. (2010). SPSS for Windows Step by Step: A Simple Guide and Reference, 17.0 update (10a ed.) Boston: Pearson].
+
+If we are satisfied that the data meet our assumptions then we can run our t-test
+```{r}
+t.test(ci_data$post,ci_data$pre, paired = TRUE)
+```
+Now we need to interpret all of the values from the t.test.
+
+It is also important to calculate the effect size for the difference. Often in PER researchers will use normalized gain, but there is very little work validating normalized gain as a reliable measure. We recommend using a variant of Cohen's d, which is the difference between two distributions divided by the pooled standard deviation. It is important to note that the effect sizes for matched samples and for unmatched samples are slightly different. Therefore, researchers need to be aware of which one they are using and which one they are comparing their results to. Here we calculate Hedge's g, which is a variant of Cohen's d that corrects for small sample sizes.
+
+```{r}
+library(effsize)
+cohen.d(ci_data$post,ci_data$pre,paired=TRUE,hedges.correction = TRUE)
+```
+Note that the output gives us an interpretation of these values based on rules of thumb provided by Cohen. These rules of thumb don't necessarily apply to CI data and should not be used. Instead use your own interpretation and results from other courses to say whether this is a meaningful difference.
+
