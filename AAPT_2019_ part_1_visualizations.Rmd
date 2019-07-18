@@ -7,13 +7,9 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(msm) #this has the rtnorm function for generating the data.
 
-#library(tidyr)
 library(psych) #contains describe function 3.3 MB
-#library(knitr) #634 kb
 library(effsize) #33 kb
-#library(cowplot)
 library(knitr)
 library(tidyr)
 library(dplyr)
