@@ -36,18 +36,14 @@ The "mean" function can find an average of set of numbers 1-5,
 mean(c(1,2,3,4,5))
 ```
 
-Build the datasets
-Replace this with uploading the dataset. Make sure we have a nice big dataset that works well
+# Step 0 - Import the Datasets
+Before we plot or compute anything, we need to import the data to analyze.  We’ll assume our data comes in the form of pre- and posttest data from a concept inventory (“CI”) that was administered before and after course instruction.  
 
+To easily import data into R, click the "Import Dataset" button in the top-right panel in the "Environment" tab.  Import "ci_data_part1" file.
+
+You can also import data via the command line using the code chunk below.  Note that you'll need to have downloaded the data file to the current "working directory" for R.
 ```{r, include=FALSE}
-set.seed(45637268)
-ci_data <- data.frame(pre= rtnorm(n=1000,mean=30,sd=24,lower=0,upper=100),
-                      gain= rtnorm(n=1000,mean=12,sd=35,lower=-10,upper=70))
-ci_data$post <- ci_data$pre + ci_data$gain
-ci_data$post[ci_data$post>100] <- 100
-ci_data$post[ci_data$post<0] <- 0
-ci_data$gain <- ci_data$post-ci_data$pre
-write.csv(ci_data, file="ci_data_long_statsig_large_eff")
+ci_data <- read.csv("ci_data_part1")
 ```
 
 Build representations of the data.
