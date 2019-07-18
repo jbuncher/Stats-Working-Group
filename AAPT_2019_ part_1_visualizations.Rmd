@@ -46,19 +46,23 @@ You can also import data via the command line using the code chunk below.  Note 
 ci_data <- read.csv("ci_data_part1")
 ```
 
-Build representations of the data.
-Scatter plot
+# Step 1: Visualize the Data
+Now that the data is imported into R as "ci_data", we can start creating some graphs.
+
+## Scatter plot
+The following code will create a scatter plot of posttest scores vs. pretest scores.
 ```{r}
-plot(ci_data$pre,ci_data$post, main='Pre/Post Scatter Plot', xlab = "Pre", ylab="Post")
+plot(ci_data$pre, ci_data$post, main='Pre/Post Scatter Plot', xlab = "Pre", ylab="Post")
 abline(0,1)
 ```
-Boxplot
+## Boxplot
+
 ```{r}
-boxplot(ci_data[c(1,3)], main='Boxplots of Pretest and Posttest Scores')
+boxplot(select(ci_data, pre, post), main='Boxplots of Pretest and Posttest Scores')
 ```
-Histograms
+$ Histograms
 ```{r}
-hist(ci_data$pre,col = rgb(1,0,0,0.4),xlab = 'Score', ylab='Count', main='Distribution of Pretest Score')
+hist(ci_data$pre, col = rgb(1,0,0,0.4), xlab = 'Score', ylab='Count', main='Distribution of Pretest Score')
 ```
 ```{r}
 hist(ci_data$post,col = rgb(0,0,1,0.4),xlab = 'Score', ylab='Count', main='Distribution of Posttest Scores')
