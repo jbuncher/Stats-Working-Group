@@ -13,7 +13,6 @@ library(effsize) #33 kb
 library(knitr)
 library(tidyr)
 library(dplyr)
-library(ggplot2)
 
 #setwd("~/Documents/GitHub/Stats-WS-master/Stats_WS") #set the working directory to a folder for this project. It makes life easier.
 
@@ -97,10 +96,19 @@ par(opar)
 ```
 Stop!
 
-Discuss these visualizations with your group and we will have a large group discussion before we move on to making visualization with ggplot.
+Discuss these visualizations with your group, and be sure to answer the following questions:
 
+1.  What are the advantages of each type of plot?
+2.  What are the disadvantages of each type of plot?
 
-Now we want to work through this using ggplot.
+Let one of the workshop moderators know when your group is ready, we will have a large group discussion before we move on to making visualization with ggplot.
+
+## Using ggplot2 for visualization
+The code above used "base R" to make the plots, which look pretty good in and of themselves.  Often, however, you'll find many resources on using "ggplot2" (or ggplot for short) to construct plots.  There are a lot of reasons why someone would choose ggplot2 over base R, or vice versa.  It really comes down to what you need to do and how familiar you are with each set.  For now, we'll just make some plots in ggplot2 to show how plots get built. First, we need to load the library:
+```{r}
+library(ggplot2)
+```
+
 ```{r}
 ggplot(data=ci_data, aes(x=pre)) + 
   geom_histogram() +
