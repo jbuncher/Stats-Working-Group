@@ -1,15 +1,9 @@
 ---
-title: "Stats WS"
-author: "Jayson Nissen"
-date: "5/7/2018"
+title: "AAPT Summer 2019 Stats WS"
+author: "Jayson Nissen, John Buncher, Daryl McPadden, & Rachel Henderson"
+date: "7/21/2019"
 output: pdf_document
 ---
-Notes on things to cover.
-How markdown works.
-Loading data.
-Using the help menu.
-Adding and loading packages.
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
