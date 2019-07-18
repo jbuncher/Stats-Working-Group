@@ -58,9 +58,9 @@ abline(0,1)
 ## Boxplot
 
 ```{r}
-boxplot(select(ci_data, pre, post), main='Boxplots of Pretest and Posttest Scores')
+boxplot(with(ci_data, data.frame(pre, post)), main='Boxplots of Pretest and Posttest Scores')
 ```
-$ Histograms
+## Histograms
 ```{r}
 hist(ci_data$pre, col = rgb(1,0,0,0.4), xlab = 'Score', ylab='Count', main='Distribution of Pretest Score')
 ```
@@ -69,7 +69,8 @@ hist(ci_data$post,col = rgb(0,0,1,0.4),xlab = 'Score', ylab='Count', main='Distr
 ```
 
 ```{r}
-#Note that this is a terrible way to make a histogram. We highly recommend learning ggplot and the tidyverse.
+# Note that this is a terrible way to make a histogram. We highly recommend learning ggplot 
+# and the tidyverse (later in this document!) 
 ## calculate the histograms - don't plot yet
 histpre <- hist(ci_data$pre,plot = FALSE, breaks=10)
 histpost <- hist(ci_data$post,plot = FALSE, breaks=10)
