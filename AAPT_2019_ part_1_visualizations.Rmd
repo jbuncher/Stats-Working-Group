@@ -25,11 +25,16 @@ cbbpalette <- c('#000000','#E69F00','#56B4E9')
 
 ```
 
-## R Markdown
+# Introduction -  R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+This is an R Markdown file will walk you through producing several visualizations of concept inventory pre/post scores for a class of students.  Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+When you click the **Knit** button above a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+The "mean" function can find an average of set of numbers 1-5,
+```{r}
+mean(c(1,2,3,4,5))
+```
 
 Build the datasets
 Replace this with uploading the dataset. Make sure we have a nice big dataset that works well
