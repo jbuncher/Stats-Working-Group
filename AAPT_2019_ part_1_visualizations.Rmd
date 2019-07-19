@@ -134,31 +134,38 @@ ggplot(data=ci_data, aes(x=pre)) +
 
 ```
 
-Now we want to make comparisons, which requires reformating the data. ggplot works on the premise that all of the data is in a single vector and different vectors have information about the groupings that we will need.
+Now we want to make comparisons, which requires reformating the data. ggplot works on the premise that all of the data is in a single vector and different vectors have information about the groupings that we will need.  If you look at the ci_data dataframe, you'll see that each "observation" (row) is a student, with information about their pretests score, posttest score, and gain in the table.  The "head" command is useful for looking at the first few rows of a data frame.
+```{r}
+head(ci_data)
+```
+This is useful for constructing things such as pre vs. post scatterplots, where each datapoint is a student.  For other visualizations where we want to compare how scores change based on certain factors, it's useful to think of the score as the observation, and the other factors (student id, pre or post, etc.) as descriptors of that observation.
 
 To make side by side histograms in ggplot we need to put all of the test scores into one column and the pre/posttest names into a different column.
 
 ```{r}
-plot_data <- gather(ci_data[c(1,3)], key="time", value = "score")
+scores_data <- gather(ci_data, key="time", value = "score", pre, post, gain)
+head(scores_data)
+```
 
-ggplot(data=plot_data, aes(x=score, group=time, fill=time) ) + 
+```{r}
+ggplot(data=scores_data, aes(x=score, group=time, fill=time) ) + 
   geom_histogram(alpha=0.5, position = "identity") +
   theme(plot.title = element_text(hjust = 0.5))+
   labs(title = "Histogram of Pretest Scores", y="Count", x= "Test Score (%)")
 ```
 
-Activity! Use the ci_data and/or plot_data to create 
+Activity! Use the ci_data and/or scores_data to create the following plots in ggplot:
 (1) a scatter plot, 
 (2) a box plot, and 
 (3) a density plot.
 
 ```{r}
-
+## PUT YOUR GGPLOT CODE IN THIS BLOCK
 ```
-Additional things to do:
+Additional things to try if you finish early:
 Change the colors
 Add fit line to the scatter plot
-Change the Alpha
+Change the Alpha (transparency)
 Modify the legend
 Any other ideas that you have that we should share with everyone.
 
