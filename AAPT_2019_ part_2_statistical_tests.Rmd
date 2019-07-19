@@ -32,33 +32,38 @@ To easily import data into R, click the "Import Dataset" button in the top-right
 my_ci_data <- 
 ```
 
+# Step 1: Visualize the Data
+Using the code from Part 1 as a reference, fill out the following blank chunk to generate box plots, histograms and scatter plots for the data using GGPLOT.  Code to generate these plots using base R is provided below the blank space.
 
-Use the prior code to generate box plots, histograms and scatter plots for the data using GGPLOT. Here is the code using base.
-
+## ggplot code to produce box plots, histograms, & scatter plots
 ```{r}
 
 ```
 
+## Scatter plot
+The following code will create a scatter plot of posttest scores vs. pretest scores.
 ```{r}
-plot(ci_data$pre,ci_data$post, main='Pre/Post Scatter Plot', xlab = "Pre", ylab="Post")
+plot(my_ci_data$pre, my_ci_data$post, main='Pre/Post Scatter Plot', xlab = "Pre", ylab="Post")
 abline(0,1)
 ```
-Boxplot
+## Boxplot
 ```{r}
-boxplot(ci_data[c(1,3)], main='Boxplots of Pretest and Posttest Scores')
-```
-Histograms
-```{r}
-hist(ci_data$pre,col = rgb(1,0,0,0.4),xlab = 'Score', ylab='Count', main='Distribution of Pretest Score')
+boxplot(with(ci_data, data.frame(pre, post)), main='Boxplots of Pretest and Posttest Scores')
 ```
 
+## Histograms
+```{r}
+hist(ci_data$pre, col = rgb(1,0,0,0.4), xlab = 'Score', ylab='Count', main='Distribution of Pretest Score')
+```
+
 
 ```{r}
-hist(ci_data$post,col = rgb(0,0,1,0.4),xlab = 'Score', ylab='Count', main='Distribution of Posttest Scores')
+hist(ci_data$post, col = rgb(0,0,1,0.4), xlab = 'Score', ylab='Count', main='Distribution of Posttest Scores')
 ```
 
 ```{r}
-#Note that this is a terrible way to make a histogram. We highly recommend learning ggplot and the tidyverse.
+# Note that this is a terrible way to make a histogram. We highly recommend learning ggplot 
+# and the tidyverse.
 ## calculate the histograms - don't plot yet
 histpre <- hist(ci_data$pre,plot = FALSE, breaks=10)
 histpost <- hist(ci_data$post,plot = FALSE, breaks=10)
