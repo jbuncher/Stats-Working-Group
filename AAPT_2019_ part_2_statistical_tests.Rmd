@@ -1,25 +1,15 @@
 ---
-title: "Stats WS"
-author: "Jayson Nissen"
-date: "5/7/2018"
+title: "AAPT Summer 2019 Stats WS: Part 1"
+author: "Jayson Nissen, John Buncher, Daryl McPadden, & Rachel Henderson"
+date: "7/21/2019"
 output: pdf_document
 ---
-Notes on things to cover.
-How markdown works.
-Loading data.
-Using the help menu.
-Adding and loading packages.
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(msm) #this has the rtnorm function for generating the data.
 
-#library(tidyr)
 library(psych) #contains describe function 3.3 MB
-#library(knitr) #634 kb
 library(effsize) #33 kb
-library(cowplot)
 library(knitr)
 library(tidyr)
 library(dplyr)
@@ -31,7 +21,6 @@ std.err <- function(x) sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))
 #Color blind palletes for making figures
 plot_col <- c('#66c2a5', '#fc8d62', '#8da0cb')
 cbbpalette <- c('#000000','#E69F00','#56B4E9')
-
 ```
 
 ## R Markdown
