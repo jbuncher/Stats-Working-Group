@@ -143,15 +143,15 @@ This is useful for constructing things such as pre vs. post scatterplots, where 
 To make side by side histograms in ggplot we need to put all of the test scores into one column and the pre/posttest names into a different column.
 
 ```{r}
-scores_data <- gather(ci_data, key="time", value = "score", pre, post, gain)
+tidy_ci_data <- gather(ci_data, key="time", value = "score", pre, post)
 head(scores_data)
 ```
 
 ```{r}
-ggplot(data=scores_data, aes(x=score, group=time, fill=time) ) + 
+ggplot(data=tidy_ci_data, aes(x=score, group=time, fill=time) ) + 
   geom_histogram(alpha=0.5, position = "identity") +
   theme(plot.title = element_text(hjust = 0.5))+
-  labs(title = "Histogram of Pretest Scores", y="Count", x= "Test Score (%)")
+  labs(title = "Histogram of Pretest & Posttest Scores", y="Count", x= "Test Score (%)")
 ```
 
 Activity! Use the ci_data and/or scores_data to create the following plots in ggplot:
@@ -172,7 +172,7 @@ Any other ideas that you have that we should share with everyone.
 
 Extra Activity: Use the plot data with the extra course variable to divide it into two groups and create a faceted density plot with pre and post histograms for both groups (i.e., facet by course)
 ```{r}
-plot_data$course <- sample(x=c("H","T"), prob = c(0.5,0.5))
+tidy_ci_data$course <- sample(x=c("H","T"), prob = c(0.5,0.5))
 
 
 ```
