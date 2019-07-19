@@ -144,7 +144,7 @@ To make side by side histograms in ggplot we need to put all of the test scores 
 
 ```{r}
 tidy_ci_data <- gather(ci_data, key="time", value = "score", pre, post)
-head(scores_data)
+head(tidy_ci_data)
 ```
 
 ```{r}
