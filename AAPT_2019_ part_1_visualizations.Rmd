@@ -155,22 +155,27 @@ ggplot(data=tidy_ci_data, aes(x=score, group=time, fill=time) ) +
 ```
 
 Activity! Use the ci_data and/or scores_data to create the following plots in ggplot:
-(1) a scatter plot, 
-(2) a box plot, and 
-(3) a density plot.
+
+1. a scatter plot, 
+2. a box plot, and 
+3. a density plot.
 
 ```{r}
 ## PUT YOUR GGPLOT CODE IN THIS BLOCK
 ```
-Additional things to try if you finish early:
-Change the colors
-Add fit line to the scatter plot
-Change the Alpha (transparency)
-Modify the legend
-Any other ideas that you have that we should share with everyone.
+
+# Additional Customizations
+Here are a few additional things to try if you finish early:
+
+* Change the colors
+* Add fit line to the scatter plot
+* Change the Alpha (transparency)
+* Modify the legend
+* Any other ideas that you have that we should share with everyone!
 
 
-Extra Activity: Use the plot data with the extra course variable to divide it into two groups and create a faceted density plot with pre and post histograms for both groups (i.e., facet by course)
+# Extra Challenge
+Use the plot data with the extra course variable to divide it into two groups and create a ``faceted`` density plot with pre and post histograms for both groups (i.e., facet by course)
 ```{r}
 tidy_ci_data$course <- sample(x=c("H","T"), prob = c(0.5,0.5))
 
