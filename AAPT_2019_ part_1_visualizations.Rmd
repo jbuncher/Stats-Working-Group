@@ -1,5 +1,5 @@
 ---
-title: "AAPT Summer 2019 Stats WS"
+title: "AAPT Summer 2019 Stats WS: Part 1"
 author: "Jayson Nissen, John Buncher, Daryl McPadden, & Rachel Henderson"
 date: "7/21/2019"
 output: pdf_document
