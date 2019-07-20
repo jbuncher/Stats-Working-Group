@@ -155,7 +155,7 @@ ggplot(data=tidy_ci_data, aes(x=score, group=time, fill=time) ) +
   labs(title = "Histogram of Pretest & Posttest Scores", y="Count", x= "Test Score (%)")
 ```
 
-Activity! Use the ci_data and/or scores_data to create the following plots in ggplot:
+Activity! Use the ci_data and/or tidy_ci_data to create the following plots in ggplot:
 
 1. a scatter plot, 
 2. a box plot, and 
