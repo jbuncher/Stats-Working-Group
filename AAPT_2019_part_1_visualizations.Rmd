@@ -178,6 +178,8 @@ Here are a few additional things to try if you finish early:
 # Extra Challenge
 Use the plot data with the extra course variable to divide it into two groups and create a ``faceted`` density plot with pre and post histograms for both groups (i.e., facet by course)
 ```{r}
+# this next line adds a "course" variable splitting the data 
+# into two courses, "H" and "T"
 tidy_ci_data$course <- sample(x=c("H","T"), prob = c(0.5,0.5))
 
 
