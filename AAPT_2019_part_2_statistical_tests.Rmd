@@ -24,18 +24,26 @@ cbbpalette <- c('#000000','#E69F00','#56B4E9')
 # Step 0 - Import the Dataset
 We need to import a new dataset to analyze.  We’ll again assume our data comes in the form of pre- and posttest data from a concept inventory (“CI”) that was administered before and after course instruction.  
 
-To easily import data into R, click the "Import Dataset" button in the top-right panel in the "Environment" tab.  Import your group's assigned dataset (A, B, C, or D), and make sure the data gets named "my_ci_data"!  If you'd rather import using the command line, complete the R code in the blank chunk below:
+To easily import data into R, click the "Import Dataset" button in the top-right panel in the "Environment" tab.  Import your group's assigned dataset (A, B, C, or D), and make sure the data gets named ``my_ci_data``!  If you'd rather import using the command line, complete the R code in the blank chunk below:
 
 ```{r}
 my_ci_data <- read.csv("ci_data_D")
 ```
 
 # Step 1: Visualize the Data
-Using the code from Part 1 as a reference, fill out the following blank chunk to generate box plots, histograms and scatter plots for the data using GGPLOT.  Code to generate these plots using base R is provided below the blank space.
+Using the code from Part 1 as a reference, fill out the following blank chunk to generate box plots, histograms and scatter plots for the data using GGPLOT.  Code to generate these plots using base R is provided below the blank spaces.
 
 ## ggplot code to produce box plots, histograms, & scatter plots
 ```{r}
 library(ggplot2)
+## ggplot histogram code below here
+
+
+## ggplot box plot code below here
+
+
+## ggplot scatter plot code below here
+
 
 ```
 
@@ -96,7 +104,7 @@ Make a density plot comparing pre and posttest scores using ggplot
 ```
 
 # Step 3 - Descriptive Statistics
-Now we want to calculate the descriptive statistics for the data. There are a lot of ways to do this. We are going to use the "describe"" function in the "psych" package. Kable is a function for markdown documents that creates tables.  If you wanted to just have the nicely formatted table in the final pdf/HTML/doc file, you would comment out the `print(sumstats)` line and uncomment the `kable(sumstats, digits=1)` line.
+Now we want to calculate the descriptive statistics for the data. There are a lot of ways to do this. We are going to use the `describe` function in the `psych` package. Kable is a function for markdown documents that creates tables.  If you wanted to just have the nicely formatted table in the final pdf/HTML/doc file, you would comment out the `print(sumstats)` line and uncomment the `kable(sumstats, digits=1)` line.
 
 ```{r}
 library(psych)
@@ -127,12 +135,10 @@ If we are satisfied that the data meet our assumptions then we can run our $t$-t
 ```{r}
 t.test(my_ci_data$post, my_ci_data$pre, paired = TRUE, var.equal=TRUE)
 ```
-If we are worried about the variances being unequal then we can run a second test
+If we are worried about the variances being unequal then we can run a second test which accounts for this
 ```{r}
 t.test(my_ci_data$post, my_ci_data$pre, paired = TRUE, var.equal = FALSE)
 ```
-
-Now we need to interpret all of the values from the $t$-test.
 
 It is also important to calculate the effect size for the difference. Often in PER researchers will use normalized gain, but there is very little work validating normalized gain as a reliable measure. We recommend using a variant of Cohen's $d$, which is the difference between two distributions divided by the pooled standard deviation. It is important to note that the effect sizes for matched samples and for unmatched samples are slightly different. Therefore, researchers need to be aware of which one they are using and which one they are comparing their results to. Here we calculate Hedge's $g$, which is a variant of Cohen's $d$ that corrects for small sample sizes.
 
@@ -144,7 +150,12 @@ effsize::cohen.d(my_ci_data$post, my_ci_data$pre, paired=TRUE, hedges.correction
 ```
 Note that the output gives us an interpretation of these values based on rules of thumb provided by Cohen (small/medium/large). These rules of thumb don't necessarily apply to CI data and should not be used. Instead use your own interpretation and results from other courses to determine whether this is a meaningful difference.
 
-Discuss in your groups if you think there is a meaningful difference between the pre and post scores.
+## Small Group Discussion
+Answer the following questions:
+
+1. What do the results of the $t$-test say about the pre and post scores?
+2. What do the results of the effect size say about the pre and post scores?
+3. Is there a meaningful difference between the pre and post scores?
 
 
 If you have finished and are waiting for the group discussion feel free to explore these ideas with your group.
