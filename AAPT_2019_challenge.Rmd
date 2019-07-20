@@ -1,0 +1,179 @@
+---
+title: "Stats WS-Challenge"
+author: "Rachel Henderson"
+date: "July 18, 2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(msm) #this has the rtnorm function for generating the data.
+
+#library(tidyr)
+library(psych) #contains describe function 3.3 MB
+#library(knitr) #634 kb
+library(effsize) #33 kb
+library(cowplot)
+library(knitr)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+setwd("C:/Users/Rachel/Desktop") #set the working directory to a folder for this project. It makes life easier.
+
+std.err <- function(x) sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))
+
+#Color blind palletes for making figures
+plot_col <- c('#66c2a5', '#fc8d62', '#8da0cb')
+cbbpalette <- c('#000000','#E69F00','#56B4E9')
+
+```
+
+## Part I: Visualization of the Challenge Dataset
+
+Now that we've loaded the packages that we will need for the challenge, import the challenge dataset.
+
+```{r, include=FALSE}
+chal_data <- read.csv("challenge_data.csv")
+```
+
+Build representations of the data.
+
+Does a scatter plot make sense for this type of data?
+
+```{r}
+plot(chal_data$pre,chal_data$post, main='Pre/Post Scatter Plot', xlab = "Pre", ylab="Post")
+abline(0,1)
+```
+
+What about a boxplot?
+
+```{r}
+boxplot(chal_data[c(2,3)], main='Boxplots of Pretest and Posttest Scores')
+```
+
+
+What about a histogram?
+
+```{r}
+hist(chal_data$pre,col = rgb(1,0,0,0.4),xlab = 'Score', ylab='Count', main='Distribution of Pretest Score')
+```
+```{r}
+hist(chal_data$post,col = rgb(0,0,1,0.4),xlab = 'Score', ylab='Count', main='Distribution of Posttest Scores')
+```
+
+```{r}
+#Note that this is a terrible way to make a histogram. We highly recommend learning ggplot and the tidyverse.
+## calculate the histograms - don't plot yet
+histpre <- hist(chal_data$pre,plot = FALSE, breaks=10)
+histpost <- hist(chal_data$post,plot = FALSE, breaks=10)
+## calculate the range of the graph
+xlim <- range(histpre$breaks,histpost$breaks)
+ylim <- range(0,histpre$counts,
+              histpost$counts)
+## plot the first graph
+plot(histpre,xlim = xlim, ylim = ylim,
+     col = rgb(1,0,0,0.4),xlab = 'Score', ylab='Count',
+     freq = TRUE, ## relative, not absolute frequency
+     main = 'Distribution of Pretest and Posttest Scores')
+## plot the second graph on top of this
+opar <- par(new = FALSE)
+plot(histpost,xlim = xlim, ylim = ylim,
+     xaxt = 'n', yaxt = 'n', ## don't add axes
+     col = rgb(0,0,1,0.4), add = TRUE,
+     freq = TRUE) ## relative, not absolute frequency
+## add a legend in the corner
+legend('topleft',c('Pre','Post'),
+       fill = rgb(1:0,0,0:1,0.4), bty = 'n',
+       border = NA)
+par(opar)
+```
+
+Stop!
+
+Discuss these visualizations with your group and we will have a large group discussion before we move on to making visualization with ggplot.
+
+
+Now we want to work through this using ggplot.
+```{r}
+ggplot(data=chal_data, aes(x=pre)) + 
+  geom_bar() +
+  theme_minimal()
+
+ggplot(data=chal_data, aes(x=pre)) + 
+  geom_bar(color="red", fill= "green", alpha=0.5) +
+  theme_minimal()
+
+ggplot(data=chal_data, aes(x=pre)) + 
+  geom_bar(color="red", fill= "green", alpha=0.5) +
+  labs(title = "Bar Plot of Pretest Scores", y="Count", x= "Raw Score")
+
+ggplot(data=chal_data, aes(x=pre)) + 
+  geom_bar(color="red", fill= "green", alpha=0.5) +
+  theme(plot.title = element_text(hjust = 0.5))+
+  labs(title = "Bar Plot of Pretest Scores", y="Count", x= "Raw Score")
+
+ggplot(data=chal_data, aes(x=pre)) + 
+  geom_density(color="red", fill= "green", alpha=0.5) +
+  theme(plot.title = element_text(hjust = 0.5))+
+  labs(title = "Bar Plot of Pretest Scores", y="Count", x= "Raw Score")
+
+```
+
+Now we want to make comparisons, which requires reformating the data. ggplot works on the premise that all of the data is in a single vector and different vectors have information about the groupings that we will need.
+
+To make side by side barplots in ggplot we need to put all of the test scores into one column and the pre/posttest names into a different column.
+
+```{r}
+plot_data <- gather(chal_data[c(2,3)], key="time", value = "score")
+
+ggplot(data=plot_data, aes(x=score, group=time, fill=time) ) + 
+  geom_bar(alpha=0.5, position = position_dodge()) +
+  theme(plot.title = element_text(hjust = 0.5))+
+  labs(title = "Bar Plot of Pretest Scores", y="Count", x= "Raw Score")
+```
+
+Activity! Use the ch_data and/or plot_data to create 
+(1) a box plot,
+(2) a histogram
+(3) a density plot.
+
+```{r}
+
+```
+Additional things to do:
+Change the colors
+Add fit line to the scatter plot
+Change the Alpha
+Modify the legend
+Any other ideas that you have that we should share with everyone.
+
+# Part II: Statistical Tests
+
+Now we want to calculate the descriptive statistics for the data. There are a lot of ways to do this. We are going to use the describe function in the Psych package. Kable is a function for markdown documents that creates tables.
+
+```{r}
+sumstats<-describe(chal_data)
+print(sumstats)
+
+kable(sumstats, digits=1)
+```
+
+Now we need to determine what type of statistical tests that we want to run.
+Last time for the pre/post data we used a matched t-test. However, DOES THIS DATA MEET THE ASSUMPTIONS OF A T-TEST? Reminder, these assumptions include:
+1. The data is measured on a continuous scale.
+2. The data is matched across two groups.
+3. There are no major outliers in the differences between the groups
+4. The distributions of the differences are approximately normally distributed
+
+Here, the pre/post data is ranked data on a scale from 0 to 4 and therefore, the first assumption of continuous data is violated. We need to use a different statistical test. There are many different non-parametric statistical tests that can be used on ranked data; we suggest using the Mann-Whitney U statisical test (also called the Wilcoxon rank-sum test) and Cliff's Delta for the effect size.
+
+
+```{r}
+wilcox.test(chal_data$post,chal_data$pre, paired=TRUE)
+cliff.delta(chal_data$post,chal_data$pre, conf.level=.95)
+```
+
+Cliff's delta is limited to a value between -1 and 1 which is different from Cohen's d. The Cliff's delta values that correspond to small, medium, and large effect sizes are of 0.147, 0.33, and 0.474, respectively (see Cohen, 1969 pg. 23 for further details)
+
+Do you think that this is a meaningful difference? Discuss in your group.
