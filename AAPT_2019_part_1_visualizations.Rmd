@@ -38,7 +38,7 @@ mean(c(1,2,3,4,5))
 # Step 0 - Import the Datasets
 Before we plot or compute anything, we need to import the data to analyze.  We’ll assume our data comes in the form of pre- and posttest data from a concept inventory (“CI”) that was administered before and after course instruction.  
 
-To easily import data into R, click the "Import Dataset" button in the top-right panel in the "Environment" tab.  Import "ci_data_part1" file.
+To easily import data into R, click the "Import Dataset" button in the top-right panel in the "Environment" tab.  Import the "ci_data_part1" file.
 
 You can also import data via the command line using the code chunk below.  Note that you'll need to have downloaded the data file to the current "working directory" for R.
 ```{r, include=FALSE}
@@ -98,8 +98,9 @@ Stop!
 
 Discuss these visualizations with your group, and be sure to answer the following questions:
 
-1.  What are the advantages of each type of plot?
-2.  What are the disadvantages of each type of plot?
+1.  What information does each plot give you?
+2.  What features of the plot tell you that information? (How do you interpret each plot?)
+3.  What are the advantages/disadvantages of each plot? (When would you use each plot?)
 
 Let one of the workshop moderators know when your group is ready, we will have a large group discussion before we move on to making visualization with ggplot.
 
