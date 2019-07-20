@@ -8,7 +8,6 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-library(psych) #contains describe function 3.3 MB
 library(effsize) #33 kb
 library(knitr)
 library(tidyr)
@@ -29,7 +28,7 @@ We need to import a new dataset to analyze.  We’ll again assume our data comes
 To easily import data into R, click the "Import Dataset" button in the top-right panel in the "Environment" tab.  Import your group's assigned dataset (A, B, C, or D), and make sure the data gets named "my_ci_data"!  If you'd rather import using the command line, complete the R code in the blank chunk below:
 
 ```{r}
-my_ci_data <- 
+#my_ci_data <- 
 ```
 
 # Step 1: Visualize the Data
@@ -65,15 +64,15 @@ hist(ci_data$post, col = rgb(0,0,1,0.4), xlab = 'Score', ylab='Count', main='Dis
 # Note that this is a terrible way to make a histogram. We highly recommend learning ggplot 
 # and the tidyverse.
 ## calculate the histograms - don't plot yet
-histpre <- hist(ci_data$pre,plot = FALSE, breaks=10)
-histpost <- hist(ci_data$post,plot = FALSE, breaks=10)
+histpre <- hist(ci_data$pre, plot = FALSE, breaks=10)
+histpost <- hist(ci_data$post, plot = FALSE, breaks=10)
 ## calculate the range of the graph
-xlim <- range(histpre$breaks,histpost$breaks)
+xlim <- range(histpre$breaks, histpost$breaks)
 ylim <- range(0,histpre$counts,
               histpost$counts)
 ## plot the first graph
 plot(histpre,xlim = xlim, ylim = ylim,
-     col = rgb(1,0,0,0.4),xlab = 'Score', ylab='Count',
+     col = rgb(1,0,0,0.4), xlab = 'Score', ylab='Count',
      freq = TRUE, ## relative, not absolute frequency
      main = 'Distribution of Pretest and Posttest Scores')
 ## plot the second graph on top of this
@@ -94,9 +93,10 @@ Make a density plot comparing pre and posttest scores using ggplot
 
 ```
 
-Now we want to calculate the descriptive statistics for the data. There are a lot of ways to do this. We are going to use the describe function in the Psych package. Kable is a function for markdown documents that creates tables.
-```{r eval=FALSE, include=FALSE}
-sumstats<-describe(ci_data)
+Now we want to calculate the descriptive statistics for the data. There are a lot of ways to do this. We are going to use the "describe"" function in the "psych" package. Kable is a function for markdown documents that creates tables.
+```{r}
+library(psych)
+sumstats <- describe(ci_data)
 print(sumstats)
 
 kable(sumstats, digits=1)
@@ -104,6 +104,7 @@ kable(sumstats, digits=1)
 
 Now we need to determine what type of statistical tests that we want to run.
 The most common test for pre/post concept inventories is a matched t-test. Before we run the test we want to check that the data meets the assumptions for the test. These assumptions include:
+
 1. The data is measured on a continuous scale.
 2. The data is matched across two groups.
 3. There are no major outliers in the differences between the groups
