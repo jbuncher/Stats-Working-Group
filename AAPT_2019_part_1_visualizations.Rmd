@@ -30,7 +30,7 @@ This is an R Markdown file will walk you through producing several visualization
 
 When you click the **Knit** button above a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-The "mean" function can find an average of set of numbers 1-5,
+The `mean` function can find an average of set of numbers 1-5,
 ```{r}
 mean(c(1,2,3,4,5))
 ```
@@ -46,7 +46,7 @@ ci_data <- read.csv("ci_data_part1")
 ```
 
 # Step 1: Visualize the Data
-Now that the data is imported into R as "ci_data", we can start creating some graphs.
+Now that the data is imported into R as `ci_data`, we can start creating some graphs.
 
 ## Scatter plot
 The following code will create a scatter plot of posttest scores vs. pretest scores.
@@ -104,7 +104,7 @@ Discuss these visualizations with your group, and be sure to answer the followin
 Let one of the workshop moderators know when your group is ready, we will have a large group discussion before we move on to making visualization with ggplot.
 
 ## Using ggplot2 for visualization
-The code above used "base R" to make the plots, which look pretty good in and of themselves.  Often, however, you'll find many resources on using "ggplot2" (or ggplot for short) to construct plots.  There are a lot of reasons why someone would choose ggplot2 over base R, or vice versa.  It really comes down to what you need to do and how familiar you are with each set.  For now, we'll just make some plots in ggplot2 to show how plots get built. First, we need to load the library:
+The code above used "base R" to make the plots, which look pretty good in and of themselves.  Often, however, you'll find many resources on using `ggplot2` (or ggplot for short) to construct plots.  There are a lot of reasons why someone would choose ggplot2 over base R, or vice versa.  It really comes down to what you need to do and how familiar you are with each set.  For now, we'll just make some plots in ggplot2 to show how plots get built. First, we need to load the library:
 ```{r}
 library(ggplot2)
 ```
@@ -134,7 +134,7 @@ ggplot(data=ci_data, aes(x=pre)) +
 
 ```
 
-Now we want to make comparisons, which requires reformating the data. ggplot works on the premise that all of the data is in a single vector and different vectors have information about the groupings that we will need.  If you look at the ci_data dataframe, you'll see that each "observation" (row) is a student, with information about their pretests score, posttest score, and gain in the table.  The "head" command is useful for looking at the first few rows of a data frame.
+Now we want to make comparisons, which requires reformating the data. ggplot works on the premise that all of the data is in a single vector and different vectors have information about the groupings that we will need.  If you look at the ci_data dataframe, you'll see that each "observation" (row) is a student, with information about their pretests score, posttest score, and gain in the table.  The `head` command is useful for looking at the first few rows of a data frame.
 ```{r}
 head(ci_data)
 ```
