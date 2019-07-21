@@ -27,7 +27,7 @@ We need to import a new dataset to analyze.  We’ll again assume our data comes
 To easily import data into R, click the "Import Dataset" button in the top-right panel in the "Environment" tab.  Import your group's assigned dataset (A, B, C, or D), and make sure the data gets named `my_ci_data`!  If you'd rather import using the command line, complete the R code in the blank chunk below:
 
 ```{r}
-my_ci_data <- read.csv("YOUR DATASET HERE")
+my_ci_data <- read.csv("ci_data_B") # this can be run through all four data sets: A, B, C, and D by replacing the letter. If it doesn't work it is because the working directory isn't set correctly or the file isn't in the working directory.
 ```
 
 # Step 1: Visualize the Data
@@ -37,16 +37,58 @@ Using the code from Part 1 as a reference, fill out the following blank chunk to
 ```{r}
 library(ggplot2)
 ## ggplot box plot code below here
+long_ci_data <- gather(ci_data[c("student_id","pre","post")], key="time", value = "score", pre, post)
 
+long_ci_data$time <- factor(long_ci_data$time, levels=c("pre","post"))
+
+ggplot(data=long_ci_data, aes(x=time , y=score, group=time, fill=time) ) + 
+  geom_boxplot(alpha=0.5, position = "identity") +
+  theme(plot.title = element_text(hjust = 0.5))+
+  labs(title = "Boxplots of Pretest and Posttest Scores", y="Test Score (%)", x= "Time")
 
 ## ggplot histogram code below here
+long_ci_data$time <- factor(long_ci_data$time, levels=c("pre","post")) #Switching the order to pre then post
 
+plot_3 <- ggplot(data=long_ci_data, aes(group=time , x=score, fill=time) ) + 
+  geom_histogram(alpha=0.5, position = "identity") +
+  theme(plot.title = element_text(hjust = 0.5))+
+  labs(title = "Histogram of Test Scores", y="Density", x= "Test Score (%)")+ 
+  scale_fill_manual(
+    values = cbbpalette,
+    labels = c("Pretest", "Posttest")
+)
+
+plot_3
+
+plot_3 +
+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.line = element_line(colour = "black"), legend.title = element_blank(), legend.position = c(0.8,0.8))
 
 ## ggplot density code below here
+long_ci_data$time <- factor(long_ci_data$time, levels=c("pre","post")) #Switching the order to pre then post
 
+plot_4 <- ggplot(data=long_ci_data, aes(group=time , x=score,  fill=time) ) + 
+  geom_density(alpha=0.5, position = "identity") +
+  theme(plot.title = element_text(hjust = 0.5))+
+  labs(title = "Density Plots of Test Scores", y="Density", x= "Test Score (%)")+ 
+  scale_fill_manual(
+    values = cbbpalette,
+    labels = c("Pretest", "Posttest")
+)
+
+plot_4
+
+plot_4 +
+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.line = element_line(colour = "black"), legend.title = element_blank(), legend.position = c(0.8,0.8))
 
 ## ggplot scatter plot code below here
+plot_5 <- ggplot(data=ci_data, aes(x=pre, y=post)) + 
+  geom_point(color="black", alpha=0.5) +
+  theme(plot.title = element_text(hjust = 0.5))+
+  labs(title = "Student Scores", y="Posttest Score (%)", x= "Pretest Score (%)")
 
+plot_5 + geom_smooth(method='lm',formula=y~x, se=FALSE)
 
 ```
 
