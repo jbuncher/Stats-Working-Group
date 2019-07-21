@@ -27,7 +27,7 @@ We need to import a new dataset to analyze.  We’ll again assume our data comes
 To easily import data into R, click the "Import Dataset" button in the top-right panel in the "Environment" tab.  Import your group's assigned dataset (A, B, C, or D), and make sure the data gets named `my_ci_data`!  If you'd rather import using the command line, complete the R code in the blank chunk below:
 
 ```{r}
-my_ci_data <- read.csv("ci_data_D")
+my_ci_data <- read.csv("YOUR DATASET HERE")
 ```
 
 # Step 1: Visualize the Data
