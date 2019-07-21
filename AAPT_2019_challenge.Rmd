@@ -110,11 +110,14 @@ ggplot(data=long_chal_data, aes(x=score, group=time, fill=time) ) +
 ```
 
 # Activity! 
-Use the ci_data and/or long_ci_data to create the following plots in ggplot:
+Use the chal_data and/or long_chal_data to create the following plots in ggplot:
 
 1. a scatter plot, 
 2. a box plot, and 
 3. a density plot.
+4. pie charts of pre and post (example code is below)
+5. pie charts or bar charts faceted,
+6. bar chart with bars over top of one another.
 
 ```{r}
 ## PUT YOUR GGPLOT CODE IN THIS BLOCK
@@ -127,16 +130,22 @@ Use the ci_data and/or long_ci_data to create the following plots in ggplot:
 
 ## ggplot scatter plot code below here
 
+
+## ggplot pie chart code below here
+as.data.frame(table(chal_data$pre)) %>% 
+    rename(class=Var1, cnt=Freq) %>%
+    ggplot(mapping = aes(x = "", y=cnt, fill = factor(class))) + 
+        geom_bar(width = 1, stat="identity")+
+        geom_text(aes(label=cnt), 
+              size=6,
+              #ensure text is printed in the middle of slice: vjust=0.5
+              position = position_stack(vjust = 0.5))+
+        #theta/angle is proportionl to count i.e. y
+        coord_polar(theta = "y") 
+
 ```
 
 
-# Additional Customizations
-Here are a few additional things to try if you finish early:
-
-* Change the colors
-* Change the Alpha (transparency)
-* Modify the legend
-* Any other ideas that you have that we should share with everyone!
 
 # Step 3 - Descriptive Statistics
 Now we want to calculate the descriptive statistics for the data. There are a lot of ways to do this. We are going to use the `describe` function in the `psych` package. Kable is a function for markdown documents that creates tables.  If you wanted to just have the nicely formatted table in the final pdf/HTML/doc file, you would comment out the `print(sumstats)` line and uncomment the `kable(sumstats, digits=1)` line.
