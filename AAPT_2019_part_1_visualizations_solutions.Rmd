@@ -258,5 +258,16 @@ panel.background = element_blank(), axis.line = element_line(colour = "black"), 
 
 ```
 ```
-
+# How the Data were Generated
+Here is the code for generating this data. Make sure that you understand all of the parts of the code. Then you can mess around with the pieces and see how that impacts the visualizations and statistical tests.
+```{r, include=FALSE}
+set.seed(45637268)
+ci_data <- data.frame(pre= rtnorm(n=1000,mean=30,sd=24,lower=0,upper=100),
+                      gain= rtnorm(n=1000,mean=12,sd=35,lower=-10,upper=70))
+ci_data$post <- ci_data$pre + ci_data$gain
+ci_data$post[ci_data$post>100] <- rtnorm(n=1000, mean=80, sd=10, lower=60, upper=100)
+ci_data$post[ci_data$post<0] <- rtnorm(n=1000, mean=8, sd=8, lower=0, upper=30)
+ci_data$gain <- ci_data$post-ci_data$pre
+write.csv(ci_data, file="for_visualizations.csv")
+```
 
