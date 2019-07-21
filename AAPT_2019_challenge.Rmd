@@ -1,5 +1,5 @@
 ---
-title: "Stats WS-Challenge"
+title: "AAPT Summer 2019 Stats WS: Challenge"
 author: "Rachel Henderson"
 date: "July 18, 2019"
 output: pdf_document
@@ -7,19 +7,12 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(msm) #this has the rtnorm function for generating the data.
 
-#library(tidyr)
-library(psych) #contains describe function 3.3 MB
-#library(knitr) #634 kb
-library(effsize) #33 kb
-library(cowplot)
 library(knitr)
 library(tidyr)
 library(dplyr)
-library(ggplot2)
 
-setwd("C:/Users/Rachel/Desktop") #set the working directory to a folder for this project. It makes life easier.
+#setwd("C:/Users/Rachel/Desktop") #set the working directory to a folder for this project. It makes life easier.
 
 std.err <- function(x) sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))
 
@@ -29,20 +22,20 @@ cbbpalette <- c('#000000','#E69F00','#56B4E9')
 
 ```
 
-## Part I: Visualization of the Challenge Dataset
+# Step 0 - Import the Challenge Dataset
 
-Now that we've loaded the packages that we will need for the challenge, import the challenge dataset.
+We need yet another dataset!  The data used for this activity come from student responses to a single Likert-scale question (possible responses of 0, 1, 2, 3, and 4).  The questions was administered both before and after instruction.
 
 ```{r, include=FALSE}
 chal_data <- read.csv("challenge_data.csv")
 ```
 
-Build representations of the data.
+# Step 1 - Visualize the Data
 
 Does a scatter plot make sense for this type of data?
 
 ```{r}
-plot(chal_data$pre,chal_data$post, main='Pre/Post Scatter Plot', xlab = "Pre", ylab="Post")
+plot(chal_data$pre, chal_data$post, main='Pre/Post Scatter Plot', xlab = "Pre", ylab="Post")
 abline(0,1)
 ```
 
@@ -56,34 +49,34 @@ boxplot(chal_data[c(2,3)], main='Boxplots of Pretest and Posttest Scores')
 What about a histogram?
 
 ```{r}
-hist(chal_data$pre,col = rgb(1,0,0,0.4),xlab = 'Score', ylab='Count', main='Distribution of Pretest Score')
+hist(chal_data$pre,col = rgb(1,0,0,0.4), xlab = 'Score', ylab='Count', main='Distribution of Pretest Score')
 ```
 ```{r}
-hist(chal_data$post,col = rgb(0,0,1,0.4),xlab = 'Score', ylab='Count', main='Distribution of Posttest Scores')
+hist(chal_data$post,col = rgb(0,0,1,0.4), xlab = 'Score', ylab='Count', main='Distribution of Posttest Scores')
 ```
 
 ```{r}
 #Note that this is a terrible way to make a histogram. We highly recommend learning ggplot and the tidyverse.
 ## calculate the histograms - don't plot yet
-histpre <- hist(chal_data$pre,plot = FALSE, breaks=10)
-histpost <- hist(chal_data$post,plot = FALSE, breaks=10)
+histpre <- hist(chal_data$pre, plot = FALSE, breaks=10)
+histpost <- hist(chal_data$post, plot = FALSE, breaks=10)
 ## calculate the range of the graph
-xlim <- range(histpre$breaks,histpost$breaks)
-ylim <- range(0,histpre$counts,
+xlim <- range(histpre$breaks, histpost$breaks)
+ylim <- range(0, histpre$counts,
               histpost$counts)
 ## plot the first graph
-plot(histpre,xlim = xlim, ylim = ylim,
-     col = rgb(1,0,0,0.4),xlab = 'Score', ylab='Count',
+plot(histpre, xlim = xlim, ylim = ylim,
+     col = rgb(1,0,0,0.4), xlab = 'Score', ylab='Count',
      freq = TRUE, ## relative, not absolute frequency
      main = 'Distribution of Pretest and Posttest Scores')
 ## plot the second graph on top of this
 opar <- par(new = FALSE)
-plot(histpost,xlim = xlim, ylim = ylim,
+plot(histpost, xlim = xlim, ylim = ylim,
      xaxt = 'n', yaxt = 'n', ## don't add axes
      col = rgb(0,0,1,0.4), add = TRUE,
      freq = TRUE) ## relative, not absolute frequency
 ## add a legend in the corner
-legend('topleft',c('Pre','Post'),
+legend('topleft', c('Pre','Post'),
        fill = rgb(1:0,0,0:1,0.4), bty = 'n',
        border = NA)
 par(opar)
@@ -91,76 +84,74 @@ par(opar)
 
 Stop!
 
-Discuss these visualizations with your group and we will have a large group discussion before we move on to making visualization with ggplot.
+Discuss these visualizations with your group, specifically what each plot tells you about your dataset, and which are most appropriate for this type of data.
 
 
-Now we want to work through this using ggplot.
+Again, we'll create these same visualizations in ggplot, which requires reformating the data. ggplot works on the premise that all of the data is in a single vector and different vectors have information about the groupings that we will need.  If you look at the chal_data dataframe, you'll see that each "observation" (row) is a student, with information about their pretests score, posttest score, and gain in the table.  The `head` command is useful for looking at the first few rows of a data frame.
 ```{r}
-ggplot(data=chal_data, aes(x=pre)) + 
-  geom_bar() +
-  theme_minimal()
+head(chal_data)
+```
+This is useful for constructing things such as pre vs. post scatterplots, where each datapoint is a student.  For other visualizations where we want to compare how scores change based on certain factors, it's useful to think of the score as the observation, and the other factors (student id, pre or post, etc.) as descriptors of that observation.
 
-ggplot(data=chal_data, aes(x=pre)) + 
-  geom_bar(color="red", fill= "green", alpha=0.5) +
-  theme_minimal()
+To make side by side histograms in ggplot we need to put all of the test scores into one column and the pre/posttest names into a different column.
 
-ggplot(data=chal_data, aes(x=pre)) + 
-  geom_bar(color="red", fill= "green", alpha=0.5) +
-  labs(title = "Bar Plot of Pretest Scores", y="Count", x= "Raw Score")
-
-ggplot(data=chal_data, aes(x=pre)) + 
-  geom_bar(color="red", fill= "green", alpha=0.5) +
-  theme(plot.title = element_text(hjust = 0.5))+
-  labs(title = "Bar Plot of Pretest Scores", y="Count", x= "Raw Score")
-
-ggplot(data=chal_data, aes(x=pre)) + 
-  geom_density(color="red", fill= "green", alpha=0.5) +
-  theme(plot.title = element_text(hjust = 0.5))+
-  labs(title = "Bar Plot of Pretest Scores", y="Count", x= "Raw Score")
-
+```{r}
+long_chal_data <- gather(chal_data[c("student_id","pre","post")], key="time", value = "score", pre, post)
+head(long_chal_data)
 ```
 
-Now we want to make comparisons, which requires reformating the data. ggplot works on the premise that all of the data is in a single vector and different vectors have information about the groupings that we will need.
-
-To make side by side barplots in ggplot we need to put all of the test scores into one column and the pre/posttest names into a different column.
-
 ```{r}
-plot_data <- gather(chal_data[c(2,3)], key="time", value = "score")
+library(ggplot2)
 
-ggplot(data=plot_data, aes(x=score, group=time, fill=time) ) + 
+ggplot(data=long_chal_data, aes(x=score, group=time, fill=time) ) + 
   geom_bar(alpha=0.5, position = position_dodge()) +
   theme(plot.title = element_text(hjust = 0.5))+
-  labs(title = "Bar Plot of Pretest Scores", y="Count", x= "Raw Score")
+  labs(title = "Bar Plot of Pretest & Posttest Scores", y="Count", x= "Raw Score")
 ```
 
-Activity! Use the ch_data and/or plot_data to create 
-(1) a box plot,
-(2) a histogram
-(3) a density plot.
+# Activity! 
+Use the ci_data and/or long_ci_data to create the following plots in ggplot:
+
+1. a scatter plot, 
+2. a box plot, and 
+3. a density plot.
 
 ```{r}
+## PUT YOUR GGPLOT CODE IN THIS BLOCK
+
+## ggplot density plot code below here
+
+
+## ggplot box plot code below here
+
+
+## ggplot scatter plot code below here
 
 ```
-Additional things to do:
-Change the colors
-Add fit line to the scatter plot
-Change the Alpha
-Modify the legend
-Any other ideas that you have that we should share with everyone.
 
-# Part II: Statistical Tests
 
-Now we want to calculate the descriptive statistics for the data. There are a lot of ways to do this. We are going to use the describe function in the Psych package. Kable is a function for markdown documents that creates tables.
+# Additional Customizations
+Here are a few additional things to try if you finish early:
+
+* Change the colors
+* Change the Alpha (transparency)
+* Modify the legend
+* Any other ideas that you have that we should share with everyone!
+
+# Step 3 - Descriptive Statistics
+Now we want to calculate the descriptive statistics for the data. There are a lot of ways to do this. We are going to use the `describe` function in the `psych` package. Kable is a function for markdown documents that creates tables.  If you wanted to just have the nicely formatted table in the final pdf/HTML/doc file, you would comment out the `print(sumstats)` line and uncomment the `kable(sumstats, digits=1)` line.
 
 ```{r}
-sumstats<-describe(chal_data)
+library(psych)
+sumstats <- describe(chal_data)
 print(sumstats)
-
-kable(sumstats, digits=1)
+#kable(sumstats, digits=1)
 ```
 
+# Step 4 - Running Statistical Tests
 Now we need to determine what type of statistical tests that we want to run.
-Last time for the pre/post data we used a matched t-test. However, DOES THIS DATA MEET THE ASSUMPTIONS OF A T-TEST? Reminder, these assumptions include:
+Last time for the pre/post data we used a matched $t$-test. However, DOES THIS DATA MEET THE ASSUMPTIONS OF A T-TEST? Reminder, these assumptions include:
+
 1. The data is measured on a continuous scale.
 2. The data is matched across two groups.
 3. There are no major outliers in the differences between the groups
@@ -170,6 +161,8 @@ Here, the pre/post data is ranked data on a scale from 0 to 4 and therefore, the
 
 
 ```{r}
+library(effsize)
+
 wilcox.test(chal_data$post,chal_data$pre, paired=TRUE)
 cliff.delta(chal_data$post,chal_data$pre, conf.level=.95)
 ```

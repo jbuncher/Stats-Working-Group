@@ -24,22 +24,25 @@ cbbpalette <- c('#000000','#E69F00','#56B4E9')
 # Step 0 - Import the Dataset
 We need to import a new dataset to analyze.  We’ll again assume our data comes in the form of pre- and posttest data from a concept inventory (“CI”) that was administered before and after course instruction.  
 
-To easily import data into R, click the "Import Dataset" button in the top-right panel in the "Environment" tab.  Import your group's assigned dataset (A, B, C, or D), and make sure the data gets named ``my_ci_data``!  If you'd rather import using the command line, complete the R code in the blank chunk below:
+To easily import data into R, click the "Import Dataset" button in the top-right panel in the "Environment" tab.  Import your group's assigned dataset (A, B, C, or D), and make sure the data gets named `my_ci_data`!  If you'd rather import using the command line, complete the R code in the blank chunk below:
 
 ```{r}
 my_ci_data <- read.csv("ci_data_D")
 ```
 
 # Step 1: Visualize the Data
-Using the code from Part 1 as a reference, fill out the following blank chunk to generate box plots, histograms and scatter plots for the data using GGPLOT.  Code to generate these plots using base R is provided below the blank spaces.
+Using the code from Part 1 as a reference, fill out the following blank chunk to generate box plots, histograms and scatter plots for the data using GGPLOT.  Code to generate these plots using base R is provided below the blank spaces.  Remember you might have to reorganize the data!
 
-## ggplot code to produce box plots, histograms, & scatter plots
+## ggplot code to produce box plots, histograms, density, & scatter plots
 ```{r}
 library(ggplot2)
+## ggplot box plot code below here
+
+
 ## ggplot histogram code below here
 
 
-## ggplot box plot code below here
+## ggplot density code below here
 
 
 ## ggplot scatter plot code below here
@@ -98,10 +101,6 @@ legend('topleft',c('Pre','Post'),
 par(opar)
 ```
 
-Make a density plot comparing pre and posttest scores using ggplot
-```{r}
-
-```
 
 # Step 3 - Descriptive Statistics
 Now we want to calculate the descriptive statistics for the data. There are a lot of ways to do this. We are going to use the `describe` function in the `psych` package. Kable is a function for markdown documents that creates tables.  If you wanted to just have the nicely formatted table in the final pdf/HTML/doc file, you would comment out the `print(sumstats)` line and uncomment the `kable(sumstats, digits=1)` line.
@@ -113,6 +112,7 @@ print(sumstats)
 #kable(sumstats, digits=1)
 ```
 
+# Step 4 - Running Statistical Tests
 Now we need to determine what type of statistical tests that we want to run.
 The most common test for pre/post concept inventories is a matched $t$-test. Before we run the test we want to check that the data meets the assumptions for the test. These assumptions include:
 
@@ -129,6 +129,7 @@ Earlier we produced boxplots of the pretest and posttest that identified outlier
 boxplot(my_ci_data$gain, main='Boxplot of Gains') #This is a boxplot of the gains
 points(mean(my_ci_data$gain), col="blue", bg="blue", pch=16) #This adds a point for the mean to provide a visual representation of the difference between the mean and median.
 ```
+
 The boxplot can show how far apart the mean and median are and how symmetric the data is. We can look back at our summary statistics table to determine if our data is too far from normal to use a $t$-test on. A normal distribution has a skew of 0 and a kurtosis of 0. Accepted limits for both skewness and kurtosis are -2 and +2 [George, D., & Mallery, M. (2010). SPSS for Windows Step by Step: A Simple Guide and Reference, 17.0 update (10a ed.) Boston: Pearson].
 
 If we are satisfied that the data meet our assumptions then we can run our $t$-test
@@ -150,34 +151,18 @@ effsize::cohen.d(my_ci_data$post, my_ci_data$pre, paired=TRUE, hedges.correction
 ```
 Note that the output gives us an interpretation of these values based on rules of thumb provided by Cohen (small/medium/large). These rules of thumb don't necessarily apply to CI data and should not be used. Instead use your own interpretation and results from other courses to determine whether this is a meaningful difference.
 
+# Step 5 - Interpreting the Results
 ## Small Group Discussion
 Answer the following questions:
 
-1. What do the results of the $t$-test say about the pre and post scores?
-2. What do the results of the effect size say about the pre and post scores?
-3. Is there a meaningful difference between the pre and post scores?
+1. Is there a difference in your data?  How do you know?
+2. Is the difference significant?  (What does "significant" mean?)
+3. Does the difference matter? (Is your result "meaningful"?)
+4. Were the tests run appropriate for your data?
 
 
-If you have finished and are waiting for the group discussion feel free to explore these ideas with your group.
+If you have finished and are waiting for the group discussion feel free to explore the following ideas with your group.
 
-+ What is a p-value? What does and what doesn't a p-value tell us? Why is 0.05 our cutoff?
-++ Check out the resources here https://tinyurl.com/statworkshopresources to learn more.
++ What is a $p$-value? What does and what doesn't a $p$-value tell us? Why is 0.05 our cutoff?
 + What are type 1 and type 2 error and why are they both important? Calculate the Beta for your analysis.
-
-Below here will be deleted and moved into a challenge document.
-Generating Likert Scale Data in R
-
-```{r}
-att_data <- data.frame(pre =  sample(0:4, 100, replace = TRUE, prob = c(0.1, 0.2, 0.4, 0.2, 0.1)),
-                       post = sample(0:4, 100, replace = TRUE, prob = c(0.1, 0.1, 0.3, 0.3, 0.2)))
-
-plot_data <- gather(att_data, key="time", value = "score")
-
-ggplot(data=plot_data, aes(x=score, group=time, fill=time) ) + 
-  geom_bar(alpha=0.5, position = position_dodge()) +
-  theme(plot.title = element_text(hjust = 0.5))+
-  labs(title = "Histogram of Pretest Scores", y="Count", x= "Test Score (%)")
-
-write.csv(att_data, file="challenge_data.csv")
-```
-
++ Check out the resources here <https://tinyurl.com/statworkshopresources> to learn more.

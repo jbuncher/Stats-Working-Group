@@ -54,11 +54,13 @@ The following code will create a scatter plot of posttest scores vs. pretest sco
 plot(ci_data$pre, ci_data$post, main='Pre/Post Scatter Plot', xlab = "Pre", ylab="Post")
 abline(0,1)
 ```
+
 ## Boxplot
 
 ```{r}
 boxplot(with(ci_data, data.frame(pre, post)), main='Boxplots of Pretest and Posttest Scores')
 ```
+
 ## Histograms
 ```{r}
 hist(ci_data$pre, col = rgb(1,0,0,0.4), xlab = 'Score', ylab='Count', main='Distribution of Pretest Score')
@@ -94,6 +96,7 @@ legend('topleft',c('Pre','Post'),
        border = NA)
 par(opar)
 ```
+
 Stop!
 
 Discuss these visualizations with your group, and be sure to answer the following questions:
@@ -144,18 +147,19 @@ This is useful for constructing things such as pre vs. post scatterplots, where 
 To make side by side histograms in ggplot we need to put all of the test scores into one column and the pre/posttest names into a different column.
 
 ```{r}
-tidy_ci_data <- gather(ci_data, key="time", value = "score", pre, post)
-head(tidy_ci_data)
+long_ci_data <- gather(ci_data[c("student_id","pre","post")], key="time", value = "score", pre, post)
+head(long_ci_data)
 ```
 
 ```{r}
-ggplot(data=tidy_ci_data, aes(x=score, group=time, fill=time) ) + 
+ggplot(data=long_ci_data, aes(x=score, group=time, fill=time) ) + 
   geom_histogram(alpha=0.5, position = "identity") +
   theme(plot.title = element_text(hjust = 0.5))+
   labs(title = "Histogram of Pretest & Posttest Scores", y="Count", x= "Test Score (%)")
 ```
 
-Activity! Use the ci_data and/or tidy_ci_data to create the following plots in ggplot:
+# Activity! 
+Use the ci_data and/or long_ci_data to create the following plots in ggplot:
 
 1. a scatter plot, 
 2. a box plot, and 
@@ -163,6 +167,15 @@ Activity! Use the ci_data and/or tidy_ci_data to create the following plots in g
 
 ```{r}
 ## PUT YOUR GGPLOT CODE IN THIS BLOCK
+
+## ggplot density plot code below here
+
+
+## ggplot box plot code below here
+
+
+## ggplot scatter plot code below here
+
 ```
 
 # Additional Customizations
@@ -179,8 +192,8 @@ Here are a few additional things to try if you finish early:
 Use the plot data with the extra course variable to divide it into two groups and create a ``faceted`` density plot with pre and post histograms for both groups (i.e., facet by course)
 ```{r}
 # this next line adds a "course" variable splitting the data 
-# into two courses, "H" and "T"
-tidy_ci_data$course <- sample(x=c("H","T"), prob = c(0.5,0.5))
+# into two courses, "course1" and "course2"
+long_ci_data$course <- sample(x=c("course1","course2"), prob = c(0.5,0.5))
 
 
 ```
