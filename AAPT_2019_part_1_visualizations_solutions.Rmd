@@ -1,0 +1,262 @@
+---
+title: "AAPT Summer 2019 Stats WS: Part 1"
+author: "Jayson Nissen, John Buncher, Daryl McPadden, & Rachel Henderson"
+date: "7/21/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(psych) #contains describe function 3.3 MB
+library(effsize) #33 kb
+library(knitr)
+library(tidyr)
+library(dplyr)
+
+#setwd("~/Documents/GitHub/Stats-WS-master/Stats_WS") #set the working directory to a folder for this project. It makes life easier.
+
+std.err <- function(x) sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))
+
+#Color blind palletes for making figures
+plot_col <- c('#66c2a5', '#fc8d62', '#8da0cb')
+cbbpalette <- c('#000000','#E69F00','#56B4E9')
+
+```
+
+# Introduction -  R Markdown
+
+This is an R Markdown file will walk you through producing several visualizations of concept inventory pre/post scores for a class of students.  Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button above a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+The `mean` function can find an average of set of numbers 1-5,
+```{r}
+mean(c(1,2,3,4,5))
+```
+
+# Step 0 - Import the Datasets
+Before we plot or compute anything, we need to import the data to analyze.  We’ll assume our data comes in the form of pre- and posttest data from a concept inventory (“CI”) that was administered before and after course instruction.  
+
+To easily import data into R, click the "Import Dataset" button in the top-right panel in the "Environment" tab.  Import the "ci_data_part1" file.
+
+You can also import data via the command line using the code chunk below.  Note that you'll need to have downloaded the data file to the current "working directory" for R.
+```{r, include=FALSE}
+ci_data <- read.csv("ci_data_part1")
+```
+
+# Step 1: Visualize the Data
+Now that the data is imported into R as `ci_data`, we can start creating some graphs.
+
+## Scatter plot
+The following code will create a scatter plot of posttest scores vs. pretest scores.
+```{r}
+plot(ci_data$pre, ci_data$post, main='Pre/Post Scatter Plot', xlab = "Pre", ylab="Post")
+abline(0,1)
+```
+
+## Boxplot
+
+```{r}
+boxplot(with(ci_data, data.frame(pre, post)), main='Boxplots of Pretest and Posttest Scores')
+```
+
+## Histograms
+```{r}
+hist(ci_data$pre, col = rgb(1,0,0,0.4), xlab = 'Score', ylab='Count', main='Distribution of Pretest Score')
+```
+```{r}
+hist(ci_data$post,col = rgb(0,0,1,0.4),xlab = 'Score', ylab='Count', main='Distribution of Posttest Scores')
+```
+
+```{r}
+# Note that this is a terrible way to make a histogram. We highly recommend learning ggplot 
+# and the tidyverse (later in this document!) 
+## calculate the histograms - don't plot yet
+histpre <- hist(ci_data$pre,plot = FALSE, breaks=10)
+histpost <- hist(ci_data$post,plot = FALSE, breaks=10)
+## calculate the range of the graph
+xlim <- range(histpre$breaks,histpost$breaks)
+ylim <- range(0,histpre$counts,
+              histpost$counts)
+## plot the first graph
+plot(histpre,xlim = xlim, ylim = ylim,
+     col = rgb(1,0,0,0.4),xlab = 'Score', ylab='Count',
+     freq = TRUE, ## relative, not absolute frequency
+     main = 'Distribution of Pretest and Posttest Scores')
+## plot the second graph on top of this
+opar <- par(new = FALSE)
+plot(histpost,xlim = xlim, ylim = ylim,
+     xaxt = 'n', yaxt = 'n', ## don't add axes
+     col = rgb(0,0,1,0.4), add = TRUE,
+     freq = TRUE) ## relative, not absolute frequency
+## add a legend in the corner
+legend('topleft',c('Pre','Post'),
+       fill = rgb(1:0,0,0:1,0.4), bty = 'n',
+       border = NA)
+par(opar)
+```
+
+Stop!
+
+Discuss these visualizations with your group, and be sure to answer the following questions:
+
+1.  What information does each plot give you?
+2.  What features of the plot tell you that information? (How do you interpret each plot?)
+3.  What are the advantages/disadvantages of each plot? (When would you use each plot?)
+
+Let one of the workshop moderators know when your group is ready, we will have a large group discussion before we move on to making visualization with ggplot.
+
+## Using ggplot2 for visualization
+The code above used "base R" to make the plots, which look pretty good in and of themselves.  Often, however, you'll find many resources on using `ggplot2` (or ggplot for short) to construct plots.  There are a lot of reasons why someone would choose ggplot2 over base R, or vice versa.  It really comes down to what you need to do and how familiar you are with each set.  For now, we'll just make some plots in ggplot2 to show how plots get built. First, we need to load the library:
+```{r}
+library(ggplot2)
+```
+
+```{r}
+ggplot(data=ci_data, aes(x=pre)) + 
+  geom_histogram() +
+  theme_minimal()
+
+ggplot(data=ci_data, aes(x=pre)) + 
+  geom_histogram(color="red", fill= "green", alpha=0.5) +
+  theme_minimal()
+
+ggplot(data=ci_data, aes(x=pre)) + 
+  geom_histogram(color="red", fill= "green", alpha=0.5) +
+  labs(title = "Histogram of Pretest Scores", y="Count", x= "Test Score (%)")
+
+ggplot(data=ci_data, aes(x=pre)) + 
+  geom_histogram(color="red", fill= "green", alpha=0.5) +
+  theme(plot.title = element_text(hjust = 0.5))+
+  labs(title = "Histogram of Pretest Scores", y="Count", x= "Test Score (%)")
+
+ggplot(data=ci_data, aes(x=pre)) + 
+  geom_density(color="red", fill= "green", alpha=0.5) +
+  theme(plot.title = element_text(hjust = 0.5))+
+  labs(title = "Histogram of Pretest Scores", y="Count", x= "Test Score (%)")
+
+```
+
+Now we want to make comparisons, which requires reformating the data. ggplot works on the premise that all of the data is in a single vector and different vectors have information about the groupings that we will need.  If you look at the ci_data dataframe, you'll see that each "observation" (row) is a student, with information about their pretests score, posttest score, and gain in the table.  The `head` command is useful for looking at the first few rows of a data frame.
+```{r}
+head(ci_data)
+```
+This is useful for constructing things such as pre vs. post scatterplots, where each datapoint is a student.  For other visualizations where we want to compare how scores change based on certain factors, it's useful to think of the score as the observation, and the other factors (student id, pre or post, etc.) as descriptors of that observation.
+
+To make side by side histograms in ggplot we need to put all of the test scores into one column and the pre/posttest names into a different column.
+
+```{r}
+long_ci_data <- gather(ci_data[c("student_id","pre","post")], key="time", value = "score", pre, post)
+head(long_ci_data)
+```
+
+```{r}
+ggplot(data=long_ci_data, aes(x=score, group=time, fill=time) ) + 
+  geom_histogram(alpha=0.5, position = "identity") +
+  theme(plot.title = element_text(hjust = 0.5))+
+  labs(title = "Histogram of Pretest & Posttest Scores", y="Count", x= "Test Score (%)")
+```
+
+# Activity! 
+Use the ci_data and/or long_ci_data to create the following plots in ggplot:
+
+1. a scatter plot, 
+2. a box plot, and 
+3. a density plot.
+
+```{r}
+## PUT YOUR GGPLOT CODE IN THIS BLOCK
+
+## ggplot density plot code below here
+# the following line changes the order to pre and then post
+long_ci_data$time <- factor(long_ci_data$time, levels=c("pre","post"))
+
+ggplot(data=long_ci_data, aes(group=time , x=score, fill=time) ) + 
+  geom_density(alpha=0.5, position = "identity") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  labs(title = "Density Plots of Test Scores", y="Density", x= "Test Score (%)")
+
+## ggplot box plot code below here
+# the following line changes the order to pre and then post
+long_ci_data$time <- factor(long_ci_data$time, levels=c("pre","post"))
+
+ggplot(data=long_ci_data, aes(x=time , y=score, group=time, fill=time) ) + 
+  geom_boxplot(alpha=0.5, position = "identity") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  labs(title = "Boxplots of Pretest and Posttest Scores", y="Test Score (%)", x= "Time")
+
+## ggplot scatter plot code below here
+ggplot(data=ci_data, aes(x=pre, y=post)) + 
+  geom_point(color="black", alpha=0.5) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  labs(title = "Student Scores", y="Posttest Score (%)", x= "Pretest Score (%)")
+```
+
+# Additional Customizations
+Here are a few additional things to try if you finish early:
+
+* Change the colors
+* Add fit line to the scatter plot
+* Change the Alpha (transparency)
+* Modify the legend
+* Any other ideas that you have that we should share with everyone!
+
+Changing the colors to use the color blind pallette and modify the legend
+```{r}
+long_ci_data$time <- factor(long_ci_data$time, levels=c("pre","post")) #Switching the order to pre then post
+
+plot_1 <- ggplot(data=long_ci_data, aes(group=time , x=score, fill=time) ) + 
+  geom_density(alpha=0.5, position = "identity") +
+  theme(plot.title = element_text(hjust = 0.5))+
+  labs(title = "Density Plots of Test Scores", y="Density", x= "Test Score (%)")+ 
+  scale_fill_manual(
+    values = cbbpalette,
+    labels = c("Pretest", "Posttest")
+)
+
+plot_1
+
+plot_1 +
+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.line = element_line(colour = "black"), legend.title = element_blank(), legend.position = c(0.8,0.8))
+
+```
+
+add a fit line to the scatter plot
+```{r}
+plot_2 <- ggplot(data=ci_data, aes(x=pre, y=post)) + 
+  geom_point(color="black", alpha=0.5) +
+  theme(plot.title = element_text(hjust = 0.5))+
+  labs(title = "Student Scores", y="Posttest Score (%)", x= "Pretest Score (%)")
+
+plot_2 + geom_smooth(method='lm',formula=y~x, se=FALSE)
+```
+
+# Extra Challenge
+Use the plot data with the extra course variable to divide it into two groups and create a ``faceted`` density plot with pre and post histograms for both groups (i.e., facet by course)
+```{r}
+# this next line adds a "course" variable splitting the data 
+# into two courses, "course1" and "course2"
+long_ci_data$course <- sample(x=c("course1","course2"), prob = c(0.5,0.5))
+
+long_ci_data$time <- factor(long_ci_data$time, levels=c("pre","post")) #Switching the order to pre then post
+
+ggplot(data=long_ci_data, aes(group=time , x=score, fill=time) ) + 
+  geom_density(alpha=0.5, position = "identity") +
+  theme(plot.title = element_text(hjust = 0.5))+
+  labs(title = "Density Plots of Test Scores", y="Density", x= "Test Score (%)")+ 
+  scale_fill_manual(
+    values = cbbpalette,
+    breaks = c("pre", "post"), #this and the following line can be cut and it doesn't change anything they can also be used to change the order (I think)
+    labels = c("Pretest", "Posttest")
+) +
+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.line = element_line(colour = "black"), legend.title = element_blank(), legend.position = c(0.8,0.8)) +
+  facet_wrap(~course)
+
+
+```
+```
+
+
