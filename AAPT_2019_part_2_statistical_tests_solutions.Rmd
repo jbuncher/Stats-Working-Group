@@ -1,0 +1,168 @@
+---
+title: "AAPT Summer 2019 Stats WS: Part 2"
+author: "Jayson Nissen, John Buncher, Daryl McPadden, & Rachel Henderson"
+date: "7/21/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr)
+library(tidyr)
+library(dplyr)
+
+#setwd("~/Documents/GitHub/Stats-WS-master/Stats_WS") #set the working directory to a folder for this project. It makes life easier.
+
+std.err <- function(x) sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))
+
+#Color blind palletes for making figures
+plot_col <- c('#66c2a5', '#fc8d62', '#8da0cb')
+cbbpalette <- c('#000000','#E69F00','#56B4E9')
+```
+
+# Step 0 - Import the Dataset
+We need to import a new dataset to analyze.  We’ll again assume our data comes in the form of pre- and posttest data from a concept inventory (“CI”) that was administered before and after course instruction.  
+
+To easily import data into R, click the "Import Dataset" button in the top-right panel in the "Environment" tab.  Import your group's assigned dataset (A, B, C, or D), and make sure the data gets named `my_ci_data`!  If you'd rather import using the command line, complete the R code in the blank chunk below:
+
+```{r}
+my_ci_data <- read.csv("YOUR DATASET HERE")
+```
+
+# Step 1: Visualize the Data
+Using the code from Part 1 as a reference, fill out the following blank chunk to generate box plots, histograms and scatter plots for the data using GGPLOT.  Code to generate these plots using base R is provided below the blank spaces.  Remember you might have to reorganize the data!
+
+## ggplot code to produce box plots, histograms, density, & scatter plots
+```{r}
+library(ggplot2)
+## ggplot box plot code below here
+
+
+## ggplot histogram code below here
+
+
+## ggplot density code below here
+
+
+## ggplot scatter plot code below here
+
+
+```
+
+## Base R Code for Scatter plot
+The following code will create a scatter plot of posttest scores vs. pretest scores.
+
+```{r}
+plot(my_ci_data$pre, my_ci_data$post, main='Pre/Post Scatter Plot', xlab = "Pre", ylab="Post")
+abline(0,1)
+```
+
+## Base R Code for Boxplot
+```{r}
+boxplot(with(my_ci_data, data.frame(pre, post)), main='Boxplots of Pretest and Posttest Scores')
+```
+
+## Base R Code for Histograms
+```{r}
+hist(my_ci_data$pre, col = rgb(1,0,0,0.4), xlab = 'Score', ylab='Count', main='Distribution of Pretest Score')
+```
+
+
+```{r}
+hist(my_ci_data$post, col = rgb(0,0,1,0.4), xlab = 'Score', ylab='Count', main='Distribution of Posttest Scores')
+```
+
+```{r}
+# Note that this is a terrible way to make a histogram. We highly recommend learning ggplot 
+# and the tidyverse.
+## calculate the histograms - don't plot yet
+histpre <- hist(my_ci_data$pre, plot = FALSE, breaks=10)
+histpost <- hist(my_ci_data$post, plot = FALSE, breaks=10)
+## calculate the range of the graph
+xlim <- range(histpre$breaks, histpost$breaks)
+ylim <- range(0, histpre$counts,
+              histpost$counts)
+## plot the first graph
+plot(histpre, xlim = xlim, ylim = ylim,
+     col = rgb(1,0,0,0.4), xlab = 'Score', ylab='Count',
+     freq = TRUE, ## relative, not absolute frequency
+     main = 'Distribution of Pretest and Posttest Scores')
+## plot the second graph on top of this
+opar <- par(new = FALSE)
+plot(histpost, xlim = xlim, ylim = ylim,
+     xaxt = 'n', yaxt = 'n', ## don't add axes
+     col = rgb(0,0,1,0.4), add = TRUE,
+     freq = TRUE) ## relative, not absolute frequency
+## add a legend in the corner
+legend('topleft',c('Pre','Post'),
+       fill = rgb(1:0,0,0:1,0.4), bty = 'n',
+       border = NA)
+par(opar)
+```
+
+
+# Step 3 - Descriptive Statistics
+Now we want to calculate the descriptive statistics for the data. There are a lot of ways to do this. We are going to use the `describe` function in the `psych` package. Kable is a function for markdown documents that creates tables.  If you wanted to just have the nicely formatted table in the final pdf/HTML/doc file, you would comment out the `print(sumstats)` line and uncomment the `kable(sumstats, digits=1)` line.
+
+```{r}
+library(psych)
+sumstats <- describe(my_ci_data)
+print(sumstats)
+#kable(sumstats, digits=1)
+```
+
+# Step 4 - Running Statistical Tests
+Now we need to determine what type of statistical tests that we want to run.
+The most common test for pre/post concept inventories is a matched $t$-test. Before we run the test we want to check that the data meets the assumptions for the test. These assumptions include:
+
+1. The data is measured on a continuous scale.
+2. The data is matched across two groups.
+3. There are no major outliers in the differences between the groups
+4. The distributions of the differences are approximately normally distributed
+
+In your small groups, discuss if your data meet assumptions 1 and 2.
+
+Earlier we produced boxplots of the pretest and posttest that identified outliers in those scores. We can do the same for the gains to identify outliers in the difference between the scores.
+
+```{r, echo=FALSE}
+boxplot(my_ci_data$gain, main='Boxplot of Gains') #This is a boxplot of the gains
+points(mean(my_ci_data$gain), col="blue", bg="blue", pch=16) #This adds a point for the mean to provide a visual representation of the difference between the mean and median.
+```
+
+The boxplot can show how far apart the mean and median are and how symmetric the data is. We can look back at our summary statistics table to determine if our data is too far from normal to use a $t$-test on. A normal distribution has a skew of 0 and a kurtosis of 0. Accepted limits for both skewness and kurtosis are -2 and +2 [George, D., & Mallery, M. (2010). SPSS for Windows Step by Step: A Simple Guide and Reference, 17.0 update (10a ed.) Boston: Pearson].
+
+If we are satisfied that the data meet our assumptions then we can run our $t$-test
+```{r}
+t.test(my_ci_data$post, my_ci_data$pre, paired = TRUE, var.equal=TRUE)
+```
+If we are worried about the variances being unequal then we can run a second test which accounts for this
+```{r}
+t.test(my_ci_data$post, my_ci_data$pre, paired = TRUE, var.equal = FALSE)
+```
+
+It is also important to calculate the effect size for the difference. Often in PER researchers will use normalized gain, but there is very little work validating normalized gain as a reliable measure. We recommend using a variant of Cohen's $d$, which is the difference between two distributions divided by the pooled standard deviation. It is important to note that the effect sizes for matched samples and for unmatched samples are slightly different. Therefore, researchers need to be aware of which one they are using and which one they are comparing their results to. Here we calculate Hedge's $g$, which is a variant of Cohen's $d$ that corrects for small sample sizes.
+
+```{r}
+library(effsize)
+# we make sure to use the cohen's d function from the effsize package, since 
+# the psych package has its own identically-named function
+effsize::cohen.d(my_ci_data$post, my_ci_data$pre, paired=TRUE, hedges.correction = TRUE)
+```
+Note that the output gives us an interpretation of these values based on rules of thumb provided by Cohen (small/medium/large). These rules of thumb don't necessarily apply to CI data and should not be used. Instead use your own interpretation and results from other courses to determine whether this is a meaningful difference.
+
+# Step 5 - Interpreting the Results
+## Small Group Discussion
+Answer the following questions:
+
+1. Is there a difference in your data?  How do you know?
+2. Is the difference significant?  (What does "significant" mean?)
+3. Does the difference matter? (Is your result "meaningful"?)
+4. Were the tests run appropriate for your data?
+
+
+If you have finished and are waiting for the group discussion feel free to explore the following ideas with your group.
+
++ What is a $p$-value? What does and what doesn't a $p$-value tell us? Why is 0.05 our cutoff?
++ What are type 1 and type 2 error and why are they both important? Calculate the Beta for your analysis.
++ Check out the resources here <https://tinyurl.com/statworkshopresources> to learn more.
